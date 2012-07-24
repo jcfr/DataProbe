@@ -250,7 +250,8 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
       }
     for (int componentIdx = 0; componentIdx < numberOfPixelValues; ++componentIdx)
       {
-      this->Internal->PixelValues[componentIdx] = imageData->GetScalarComponentAsDouble(i, j, k, componentIdx);
+      this->Internal->PixelValues[componentIdx] = imageData->GetScalarComponentAsDouble(
+            vtkMath::Round(i), vtkMath::Round(j), vtkMath::Round(k), componentIdx);
       }
     this->Internal->PixelNumberOfComponents = numberOfComponents;
     this->Internal->PixelProbeStatus = SUCCESS_SCALAR_VOLUME;
