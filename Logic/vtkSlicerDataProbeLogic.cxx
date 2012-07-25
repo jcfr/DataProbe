@@ -149,14 +149,14 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
   vtkMRMLScalarVolumeNode * scalarVolumeNode = vtkMRMLScalarVolumeNode::SafeDownCast(volumeNode);
   if (!scalarVolumeNode)
     {
-    this->Internal->PixelProbeStatus = ERROR_NO_SCALAR_VOLUME;
+    this->Internal->PixelProbeStatus = PROBE_ERROR_NO_SCALAR_VOLUME;
     return this->Internal->PixelProbeStatus;
     }
 
   vtkImageData * imageData = scalarVolumeNode->GetImageData();
   if(!imageData)
     {
-    this->Internal->PixelProbeStatus = ERROR_NO_IMAGE_DATA;
+    this->Internal->PixelProbeStatus = PROBE_ERROR_NO_IMAGE_DATA;
     return this->Internal->PixelProbeStatus;
     }
 
@@ -167,7 +167,7 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
     {
     if(ijk[dimIdx] < 0 || ijk[dimIdx] >= dims[dimIdx])
       {
-      this->Internal->PixelProbeStatus = ERROR_OUT_OF_FRAME;
+      this->Internal->PixelProbeStatus = PROBE_ERROR_OUT_OF_FRAME;
       return this->Internal->PixelProbeStatus;
       }
     }
@@ -184,12 +184,12 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
       }
     else
       {
-      labelProbeStatus = WARNING_LABEL_VOLUME_UNKNOWN_LABELNAME;
+      labelProbeStatus = PROBE_WARNING_LABEL_VOLUME_UNKNOWN_LABELNAME;
       }
     this->Internal->PixelNumberOfComponents = 1;
     this->Internal->PixelValues[0] = labelIndex;
     this->Internal->PixelDescription = labelName;
-    this->Internal->PixelProbeStatus = labelProbeStatus | SUCCESS;
+    this->Internal->PixelProbeStatus = labelProbeStatus | PROBE_SUCCESS;
     return this->Internal->PixelProbeStatus;
     }
   else if(vtkMRMLDiffusionTensorVolumeNode * dtiVolumeNode =
@@ -198,19 +198,19 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
     vtkIdType pointIdx = imageData->FindPoint(i, j, k);
     if (pointIdx == -1)
       {
-      this->Internal->PixelProbeStatus = ERROR_OUT_OF_FRAME;
+      this->Internal->PixelProbeStatus = PROBE_ERROR_OUT_OF_FRAME;
       return this->Internal->PixelProbeStatus;
       }
     vtkPointData* pointData = imageData->GetPointData();
     if (!pointData)
       {
-      this->Internal->PixelProbeStatus = ERROR_DTI_NO_POINT_DATA;
+      this->Internal->PixelProbeStatus = PROBE_ERROR_DTI_NO_POINT_DATA;
       return this->Internal->PixelProbeStatus;
       }
     vtkDataArray * tensors = pointData->GetTensors();
     if (!tensors)
       {
-      this->Internal->PixelProbeStatus = ERROR_DTI_NO_TENSOR_DATA;
+      this->Internal->PixelProbeStatus = PROBE_ERROR_DTI_NO_TENSOR_DATA;
       return this->Internal->PixelProbeStatus;
       }
     double tensor[9] = {0.0, 0.0, 0.0,
@@ -237,7 +237,7 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
     this->Internal->PixelNumberOfComponents = 1;
     this->Internal->PixelValues[0] = this->CalculateTensorScalars(tensorAsFloat, operation);
     this->Internal->PixelDescription = scalarInvariant;
-    this->Internal->PixelProbeStatus = SUCCESS_DTI_VOLUME;
+    this->Internal->PixelProbeStatus = PROBE_SUCCESS_DTI_VOLUME;
     return this->Internal->PixelProbeStatus;
     }
   else
@@ -254,7 +254,7 @@ int vtkSlicerDataProbeLogic::ProbePixel(vtkMRMLVolumeNode* volumeNode, double i,
             vtkMath::Round(i), vtkMath::Round(j), vtkMath::Round(k), componentIdx);
       }
     this->Internal->PixelNumberOfComponents = numberOfComponents;
-    this->Internal->PixelProbeStatus = SUCCESS_SCALAR_VOLUME;
+    this->Internal->PixelProbeStatus = PROBE_SUCCESS_SCALAR_VOLUME;
     return this->Internal->PixelProbeStatus;
     }
 }
@@ -331,39 +331,39 @@ double vtkSlicerDataProbeLogic::CalculateTensorScalars(float tensor[9], int oper
 //----------------------------------------------------------------------------
 const char* vtkSlicerDataProbeLogic::GetDataProbeStatusEnumAsString(int probeStatus)
 {
-  if (probeStatus ==  SUCCESS_DTI_VOLUME)
+  if (probeStatus ==  PROBE_SUCCESS_DTI_VOLUME)
     {
     return "Successfully probed DTI volume";
     }
-  else if (probeStatus ==  SUCCESS_SCALAR_VOLUME)
+  else if (probeStatus ==  PROBE_SUCCESS_SCALAR_VOLUME)
     {
     return "Successfully probed  Scalar volume";
     }
-  else if (probeStatus ==  SUCCESS_LABEL_VOLUME)
+  else if (probeStatus ==  PROBE_SUCCESS_LABEL_VOLUME)
     {
     return "Successfully probed  Label volume";
     }
-  else if (probeStatus == SUCCESS_LABEL_VOLUME_UNKNOWN_LABELNAME)
+  else if (probeStatus == PROBE_SUCCESS_LABEL_VOLUME_UNKNOWN_LABELNAME)
     {
     return "Unknown label name";
     }
-  else if (probeStatus ==  ERROR_NO_SCALAR_VOLUME)
+  else if (probeStatus ==  PROBE_ERROR_NO_SCALAR_VOLUME)
     {
     return "No scalar volume";
     }
-  else if (probeStatus ==  ERROR_NO_IMAGE_DATA)
+  else if (probeStatus ==  PROBE_ERROR_NO_IMAGE_DATA)
     {
     return "No image data";
     }
-  else if (probeStatus ==  ERROR_OUT_OF_FRAME)
+  else if (probeStatus ==  PROBE_ERROR_OUT_OF_FRAME)
     {
     return "Out of frame";
     }
-  else if (probeStatus ==  ERROR_DTI_NO_POINT_DATA)
+  else if (probeStatus ==  PROBE_ERROR_DTI_NO_POINT_DATA)
     {
     return "No point data";
     }
-  else if (probeStatus ==  ERROR_DTI_NO_TENSOR_DATA)
+  else if (probeStatus ==  PROBE_ERROR_DTI_NO_TENSOR_DATA)
     {
     return "No tensor data";
     }

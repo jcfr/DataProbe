@@ -335,7 +335,7 @@ processEvent(vtkObject* sender, void* callData, unsigned long eventId, void* cli
         if(d->DataProbeLogic)
           {
           int probeStatus = d->DataProbeLogic->ProbePixel(volumeNode, ijk[0], ijk[1], ijk[2]);
-          if (probeStatus & vtkSlicerDataProbeLogic::SUCCESS)
+          if (probeStatus & vtkSlicerDataProbeLogic::PROBE_SUCCESS)
             {
             if (d->DataProbeLogic->GetPixelNumberOfComponents() > 3)
               {
@@ -355,8 +355,8 @@ processEvent(vtkObject* sender, void* callData, unsigned long eventId, void* cli
             if (!pixelDescription.isEmpty())
               {
               pixelDescription.append(" ");
-              if (probeStatus == vtkSlicerDataProbeLogic::SUCCESS_LABEL_VOLUME ||
-                  probeStatus == vtkSlicerDataProbeLogic::SUCCESS_LABEL_VOLUME_UNKNOWN_LABELNAME)
+              if (probeStatus == vtkSlicerDataProbeLogic::PROBE_SUCCESS_LABEL_VOLUME ||
+                  probeStatus == vtkSlicerDataProbeLogic::PROBE_SUCCESS_LABEL_VOLUME_UNKNOWN_LABELNAME)
                 {
                 valueAsString = QString("(%1)").arg(valueAsString);
                 }
